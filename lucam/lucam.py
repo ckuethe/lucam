@@ -144,6 +144,7 @@ def API():
         HMENU,
     )
 
+    UNIMPLEMENTED_FUNCS = []
     pUCHAR_LUT = ndpointer(dtype="uint8", ndim=1, flags="C_CONTIGUOUS")
     pUCHAR_RGB = ndpointer(dtype="uint8", ndim=3, flags="C_CONTIGUOUS")
     pFLOAT_MATRIX33 = ndpointer(dtype="float32", ndim=2, shape=(3, 3), flags="C_CONTIGUOUS")
@@ -773,9 +774,15 @@ def API():
 
     for _name, _value in locals().items():
         if _name.startswith("Lucam"):
-            _func = getattr(_api, _name)
-            setattr(_func, "restype", _value[0])
-            setattr(_func, "argtypes", _value[1:])
+            # the Lumenera SDK does not implement all functions on all platforms
+            try:
+                _func = getattr(_api, _name)
+                setattr(_func, "restype", _value[0])
+                setattr(_func, "argtypes", _value[1:])
+            except AttributeError:
+                # FIXME > This should probably raise NotImplementedError if an unavailable function is called at runtime
+                UNIMPLEMENTED_FUNCS.append(_name)
+                print(f"Lucam API function {_name} not available on this platform")
         elif not _name.startswith("_"):
             setattr(_api, _name, _value)
     return _api
