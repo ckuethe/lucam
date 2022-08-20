@@ -95,18 +95,18 @@ Refer to the test() function at the end of the module for more examples.
 
 """
 
-__version__ = '2021.6.6'
+__version__ = "2021.6.6"
 
 __all__ = (
-    'API',
-    'Lucam',
-    'LucamEnumCameras',
-    'LucamNumCameras',
-    'LucamError',
-    'LucamGetLastError',
-    'LucamSynchronousSnapshots',
-    'LucamPreviewAVI',
-    'LucamConvertBmp24ToRgb24',
+    "API",
+    "Lucam",
+    "LucamEnumCameras",
+    "LucamNumCameras",
+    "LucamError",
+    "LucamGetLastError",
+    "LucamSynchronousSnapshots",
+    "LucamPreviewAVI",
+    "LucamConvertBmp24ToRgb24",
 )
 
 import sys
@@ -138,11 +138,9 @@ def API():
         HMENU,
     )
 
-    pUCHAR_LUT = ndpointer(dtype='uint8', ndim=1, flags='C_CONTIGUOUS')
-    pUCHAR_RGB = ndpointer(dtype='uint8', ndim=3, flags='C_CONTIGUOUS')
-    pFLOAT_MATRIX33 = ndpointer(
-        dtype='float32', ndim=2, shape=(3, 3), flags='C_CONTIGUOUS'
-    )
+    pUCHAR_LUT = ndpointer(dtype="uint8", ndim=1, flags="C_CONTIGUOUS")
+    pUCHAR_RGB = ndpointer(dtype="uint8", ndim=3, flags="C_CONTIGUOUS")
+    pFLOAT_MATRIX33 = ndpointer(dtype="float32", ndim=2, shape=(3, 3), flags="C_CONTIGUOUS")
 
     UCHAR = ctypes.c_ubyte
     LONGLONG = ctypes.c_longlong
@@ -160,12 +158,12 @@ def API():
         """Lucam version structure."""
 
         _fields_ = [
-            ('firmware', ULONG),
-            ('fpga', ULONG),
-            ('api', ULONG),
-            ('driver', ULONG),
-            ('serialnumber', ULONG),
-            ('reserved', ULONG),
+            ("firmware", ULONG),
+            ("fpga", ULONG),
+            ("api", ULONG),
+            ("driver", ULONG),
+            ("serialnumber", ULONG),
+            ("reserved", ULONG),
         ]
 
         def __str__(self):
@@ -175,22 +173,22 @@ def API():
         """Lucam frame format structure."""
 
         class X(ctypes.Union):
-            _fields_ = [('subSampleX', USHORT), ('binningX', USHORT)]
+            _fields_ = [("subSampleX", USHORT), ("binningX", USHORT)]
 
         class Y(ctypes.Union):
-            _fields_ = [('subSampleY', USHORT), ('binningY', USHORT)]
+            _fields_ = [("subSampleY", USHORT), ("binningY", USHORT)]
 
-        _anonymous_ = ['_x', '_y']
+        _anonymous_ = ["_x", "_y"]
         _fields_ = [
-            ('xOffset', ULONG),
-            ('yOffset', ULONG),
-            ('width', ULONG),
-            ('height', ULONG),
-            ('pixelFormat', ULONG),
-            ('_x', X),
-            ('flagsX', USHORT),
-            ('_y', Y),
-            ('flagsY', USHORT),
+            ("xOffset", ULONG),
+            ("yOffset", ULONG),
+            ("width", ULONG),
+            ("height", ULONG),
+            ("pixelFormat", ULONG),
+            ("_x", X),
+            ("flagsX", USHORT),
+            ("_y", Y),
+            ("flagsY", USHORT),
         ]
 
         def __str__(self):
@@ -202,42 +200,42 @@ def API():
         class GAINS(ctypes.Union):
             class RBGG(ctypes.Structure):
                 _fields_ = [
-                    ('gainRed', FLOAT),
-                    ('gainBlue', FLOAT),
-                    ('gainGrn1', FLOAT),
-                    ('gainGrn2', FLOAT),
+                    ("gainRed", FLOAT),
+                    ("gainBlue", FLOAT),
+                    ("gainGrn1", FLOAT),
+                    ("gainGrn2", FLOAT),
                 ]
 
             class MCYY(ctypes.Structure):
                 _fields_ = [
-                    ('gainMag', FLOAT),
-                    ('gainCyan', FLOAT),
-                    ('gainYel1', FLOAT),
-                    ('gainYel2', FLOAT),
+                    ("gainMag", FLOAT),
+                    ("gainCyan", FLOAT),
+                    ("gainYel1", FLOAT),
+                    ("gainYel2", FLOAT),
                 ]
 
-            _anonymous_ = ['_rbgg', '_mcyy']
-            _fields_ = [('_rbgg', RBGG), ('_mcyy', MCYY)]
+            _anonymous_ = ["_rbgg", "_mcyy"]
+            _fields_ = [("_rbgg", RBGG), ("_mcyy", MCYY)]
 
         class STROBE(ctypes.Union):
-            _fields_ = [('useStrobe', BOOL), ('strobeFlags', ULONG)]
+            _fields_ = [("useStrobe", BOOL), ("strobeFlags", ULONG)]
 
-        _anonymous_ = ['_gains', '_strobe']
+        _anonymous_ = ["_gains", "_strobe"]
         _fields_ = [
-            ('exposure', FLOAT),  # time in ms to expose image before readout
-            ('gain', FLOAT),  # overall gain as a multiplicative factor
-            ('_gains', GAINS),
-            ('_strobe', STROBE),
-            ('strobeDelay', FLOAT),  # delay in ms from exposure to flash
-            ('useHwTrigger', c_int),  # wait for hardware trigger
-            ('timeout', FLOAT),  # max time in ms to wait for trigger
-            ('format', LUCAM_FRAME_FORMAT),
-            ('shutterType', ULONG),
-            ('exposureDelay', FLOAT),  # delay in ms from trigger to exposure
-            ('bufferlastframe', BOOL),
-            ('ulReserved2', ULONG),
-            ('flReserved1', FLOAT),
-            ('flReserved2', FLOAT),
+            ("exposure", FLOAT),  # time in ms to expose image before readout
+            ("gain", FLOAT),  # overall gain as a multiplicative factor
+            ("_gains", GAINS),
+            ("_strobe", STROBE),
+            ("strobeDelay", FLOAT),  # delay in ms from exposure to flash
+            ("useHwTrigger", c_int),  # wait for hardware trigger
+            ("timeout", FLOAT),  # max time in ms to wait for trigger
+            ("format", LUCAM_FRAME_FORMAT),
+            ("shutterType", ULONG),
+            ("exposureDelay", FLOAT),  # delay in ms from trigger to exposure
+            ("bufferlastframe", BOOL),
+            ("ulReserved2", ULONG),
+            ("flReserved1", FLOAT),
+            ("flReserved2", FLOAT),
         ]
 
         def __str__(self):
@@ -246,7 +244,7 @@ def API():
     class LUCAM_CONVERSION(ctypes.Structure):
         """Lucam conversion structure."""
 
-        _fields_ = [('DemosaicMethod', ULONG), ('CorrectionMatrix', ULONG)]
+        _fields_ = [("DemosaicMethod", ULONG), ("CorrectionMatrix", ULONG)]
 
     class LUCAM_CONVERSION_PARAMS(ctypes.Structure):
         """Structure used for new conversion functions."""
@@ -254,32 +252,32 @@ def API():
         class GAINS(ctypes.Union):
             class YUV(ctypes.Structure):
                 _fields_ = [
-                    ('DigitalGain', FLOAT),
-                    ('DigitalWhiteBalanceU', FLOAT),
-                    ('DigitalWhiteBalanceV', FLOAT),
+                    ("DigitalGain", FLOAT),
+                    ("DigitalWhiteBalanceU", FLOAT),
+                    ("DigitalWhiteBalanceV", FLOAT),
                 ]
 
             class RGB(ctypes.Structure):
                 _fields_ = [
-                    ('DigitalGainRed', FLOAT),
-                    ('DigitalGainGreen', FLOAT),
-                    ('DigitalGainBlue', FLOAT),
+                    ("DigitalGainRed", FLOAT),
+                    ("DigitalGainGreen", FLOAT),
+                    ("DigitalGainBlue", FLOAT),
                 ]
 
-            _anonymous_ = ['_yuv', '_rgb']
-            _fields_ = [('_yuv', YUV), ('_rgb', RGB)]
+            _anonymous_ = ["_yuv", "_rgb"]
+            _fields_ = [("_yuv", YUV), ("_rgb", RGB)]
 
-        _anonymous_ = ['_gains']
+        _anonymous_ = ["_gains"]
         _fields_ = [
-            ('Size', ULONG),
-            ('DemosaicMethod', ULONG),
-            ('CorrectionMatrix', ULONG),
-            ('FlipX', BOOL),
-            ('FlipY', BOOL),
-            ('Hue', FLOAT),
-            ('Saturation', FLOAT),
-            ('UseColorGainsOverWb', BOOL),
-            ('_gains', GAINS),
+            ("Size", ULONG),
+            ("DemosaicMethod", ULONG),
+            ("CorrectionMatrix", ULONG),
+            ("FlipX", BOOL),
+            ("FlipY", BOOL),
+            ("Hue", FLOAT),
+            ("Saturation", FLOAT),
+            ("UseColorGainsOverWb", BOOL),
+            ("_gains", GAINS),
         ]
 
         def __str__(self):
@@ -289,12 +287,12 @@ def API():
         """Image format information."""
 
         _fields_ = [
-            ('Size', ULONG),
-            ('Width', ULONG),
-            ('Height', ULONG),
-            ('PixelFormat', ULONG),
-            ('ImageSize', ULONG),
-            ('LucamReserved', ULONG * 8),
+            ("Size", ULONG),
+            ("Width", ULONG),
+            ("Height", ULONG),
+            ("PixelFormat", ULONG),
+            ("ImageSize", ULONG),
+            ("LucamReserved", ULONG * 8),
         ]
 
         def __str__(self):
@@ -760,17 +758,17 @@ def API():
     LUCAM_EVENT_GPI4_CHANGED = 7
     LUCAM_EVENT_DEVICE_SURPRISE_REMOVAL = 32
 
-    if sys.platform == 'win32':
-        _api = ctypes.windll.LoadLibrary('lucamapi.dll')
+    if sys.platform == "win32":
+        _api = ctypes.windll.LoadLibrary("lucamapi.dll")
     else:
-        raise NotImplementedError('only Windows is supported')
+        raise NotImplementedError("only Windows is supported")
 
     for _name, _value in locals().items():
-        if _name.startswith('Lucam'):
+        if _name.startswith("Lucam"):
             _func = getattr(_api, _name)
-            setattr(_func, 'restype', _value[0])
-            setattr(_func, 'argtypes', _value[1:])
-        elif not _name.startswith('_'):
+            setattr(_func, "restype", _value[0])
+            setattr(_func, "argtypes", _value[1:])
+        elif not _name.startswith("_"):
             setattr(_api, _name, _value)
     return _api
 
@@ -816,27 +814,27 @@ class Lucam:
 
     for name in dir(API):
         value = getattr(API, name)
-        if name.startswith('_'):
+        if name.startswith("_"):
             continue
-        if name.startswith('LUCAM_PROP_FLAG_'):
+        if name.startswith("LUCAM_PROP_FLAG_"):
             PROP_FLAG[name[16:].lower()] = value
-        elif name.startswith('LUCAM_PROP_FLIPPING_'):
+        elif name.startswith("LUCAM_PROP_FLIPPING_"):
             PROP_FLIPPING[name[20:].lower()] = value
-        elif name.startswith('LUCAM_PROP_'):
+        elif name.startswith("LUCAM_PROP_"):
             PROPERTY[name[11:].lower()] = value
-        elif name.startswith('LUCAM_PF_'):
+        elif name.startswith("LUCAM_PF_"):
             PIXEL_FORMAT[name[9:].lower()] = value
-        elif name.startswith('LUCAM_CF_'):
+        elif name.startswith("LUCAM_CF_"):
             COLOR_FORMAT[name[9:].lower()] = value
-        elif name.startswith('LUCAM_CM_'):
+        elif name.startswith("LUCAM_CM_"):
             CORRECT_MATRIX[name[9:].lower()] = value
-        elif name.startswith('LUCAM_DM_'):
+        elif name.startswith("LUCAM_DM_"):
             DEMOSAIC_METHOD[name[9:].lower()] = value
-        elif name.startswith('LUCAM_EVENT_'):
+        elif name.startswith("LUCAM_EVENT_"):
             EVENT_ID[name[12:].lower()] = value
-        elif name.startswith('AVI_'):
+        elif name.startswith("AVI_"):
             AVI_TYPE[name[4:].lower()] = value
-        elif name.startswith('LUCAM_EXTERN_INTERFACE_'):
+        elif name.startswith("LUCAM_EXTERN_INTERFACE_"):
             EXTERN_INTERFACE[value] = name[23:]
     # del value
     # del name
@@ -859,7 +857,7 @@ class Lucam:
         self._handle = API.LucamCameraOpen(number)
         if not self._handle:
             raise LucamError(API.LucamGetLastError())
-        self._byteorder = '<' if self.is_little_endian() else '>'
+        self._byteorder = "<" if self.is_little_endian() else ">"
         self._default_frameformat, self._default_framerate = self.GetFormat()
         self._fastframe = None  # frame format while in fast frame mode
         self._streaming = None  # frame format while in streaming mode
@@ -885,36 +883,34 @@ class Lucam:
         depth = self.GetTruePixelDepth()
         littleendian = self.is_little_endian()
         gpo, gpi = self.GpioRead()
-        pixformat = 'raw8 raw16 RGB24 YUV422 Count Filter RGBA32 RGB48'.split()
+        pixformat = "raw8 raw16 RGB24 YUV422 Count Filter RGBA32 RGB48".split()
 
         result = [
-            '',
-            'Camera handle: %s' % hex(int(self._handle)),
-            'Camera ID: %s' % hex(int(camid)),
-            'Camera model: %s' % CAMERA_MODEL.get(camid, 'Unknown'),
-            'Serial number: %s' % version.serialnumber,
-            'Firmware version: %s' % print_version(version.firmware),
-            'FPGA version: %s' % print_version(version.fpga),
-            'API version: %s' % print_version(version.api),
-            'Driver version: %s' % print_version(version.driver),
-            'Interface: %s' % Lucam.EXTERN_INTERFACE[interface],
-            'Endianess: %s' % ('little' if littleendian else 'big'),
-            'GPIO output registers: 0x%01X' % gpo,
-            'GPIO input registers: 0x%01X' % gpi,
-            'Default size: %i x %i' % (default.width, default.height),
-            'Default pixel format: %s' % pixformat[default.pixelFormat],
-            'Default frame rate: %.2f' % self._default_framerate,
-            'Image offset: %i, %i' % (frame.xOffset, frame.yOffset),
-            'Image size: %i x %i'
-            % (frame.width // frame.binningX, frame.height // frame.binningY),
-            'Binning: %ix%i' % (frame.binningX, frame.binningY)
+            "",
+            "Camera handle: %s" % hex(int(self._handle)),
+            "Camera ID: %s" % hex(int(camid)),
+            "Camera model: %s" % CAMERA_MODEL.get(camid, "Unknown"),
+            "Serial number: %s" % version.serialnumber,
+            "Firmware version: %s" % print_version(version.firmware),
+            "FPGA version: %s" % print_version(version.fpga),
+            "API version: %s" % print_version(version.api),
+            "Driver version: %s" % print_version(version.driver),
+            "Interface: %s" % Lucam.EXTERN_INTERFACE[interface],
+            "Endianess: %s" % ("little" if littleendian else "big"),
+            "GPIO output registers: 0x%01X" % gpo,
+            "GPIO input registers: 0x%01X" % gpi,
+            "Default size: %i x %i" % (default.width, default.height),
+            "Default pixel format: %s" % pixformat[default.pixelFormat],
+            "Default frame rate: %.2f" % self._default_framerate,
+            "Image offset: %i, %i" % (frame.xOffset, frame.yOffset),
+            "Image size: %i x %i" % (frame.width // frame.binningX, frame.height // frame.binningY),
+            "Binning: %ix%i" % (frame.binningX, frame.binningY)
             if frame.flagsX
-            else 'Subsampling: %ix%i' % (frame.subSampleX, frame.subSampleY),
-            'Pixel format: %s' % pixformat[frame.pixelFormat],
-            'Pixel depth: %i bit' % (depth if frame.pixelFormat else 8),
-            'Frame rate: %.2f' % fps,
-            'Available frame rates: %s'
-            % ', '.join(f'{f:.2f}' for f in allfps),
+            else "Subsampling: %ix%i" % (frame.subSampleX, frame.subSampleY),
+            "Pixel format: %s" % pixformat[frame.pixelFormat],
+            "Pixel depth: %i bit" % (depth if frame.pixelFormat else 8),
+            "Frame rate: %.2f" % fps,
+            "Available frame rates: %s" % ", ".join(f"{f:.2f}" for f in allfps),
         ]
         # mn = API.FLOAT()
         # mx = API.FLOAT()
@@ -923,28 +919,28 @@ class Lucam:
         for name in sorted(Lucam.PROPERTY):
             prop = Lucam.PROPERTY[name]
             if API.LucamGetProperty(self._handle, prop, value, flags):
-                name = name.capitalize().replace('_', ' ')
+                name = name.capitalize().replace("_", " ")
                 if flags.value:
                     result.append(
-                        '{}: {} ({})'.format(
+                        "{}: {} ({})".format(
                             name,
                             value.value,
-                            ','.join(list_property_flags(flags.value)),
+                            ",".join(list_property_flags(flags.value)),
                         )
                     )
                 else:
-                    result.append(f'{name}: {value.value}')
+                    result.append(f"{name}: {value.value}")
             # if API.LucamPropertyRange(self._handle, prop,
             #                           mn, mx, value, flags):
             #     result.append('%s range: %s' % (name, print_range(
             #             mn.value, mx.value, value.value, flags.value)))
-        return '\n* '.join(result)
+        return "\n* ".join(result)
 
     def __getattr__(self, name):
         """Return value of PROPERTY or PROP_RANGE attribute."""
         if name in Lucam.PROPERTY:
             return self.GetProperty(name)[0]
-        if name.endswith('_range'):
+        if name.endswith("_range"):
             result = self.PropertyRange(name[:-6])
             setattr(self, name, result)
             return result
@@ -954,8 +950,8 @@ class Lucam:
         """Return default Snapshot settings."""
         snapshot = API.LUCAM_SNAPSHOT()
         snapshot.format = self.GetFormat()[0]
-        snapshot.exposure = self.GetProperty('exposure')[0]
-        snapshot.gain = self.GetProperty('gain')[0]
+        snapshot.exposure = self.GetProperty("exposure")[0]
+        snapshot.gain = self.GetProperty("gain")[0]
         snapshot.timeout = 1000.0
         snapshot.gainRed = 1.0
         snapshot.gainBlue = 1.0
@@ -984,10 +980,10 @@ class Lucam:
     def set_properties(self, **kwargs):
         """Set value of mutiple camera properties."""
         for name, value in kwargs.items():
-            if name.endswith('_flag'):
+            if name.endswith("_flag"):
                 continue
             prop = Lucam.PROPERTY[name]
-            flag = kwargs.get(name + '_flag', 0)
+            flag = kwargs.get(name + "_flag", 0)
             if not API.LucamSetProperty(self._handle, prop, value, flag):
                 raise LucamError(self)
 
@@ -1061,7 +1057,7 @@ class Lucam:
 
     def CreateDisplayWindow(
         self,
-        title=b'',
+        title=b"",
         style=282001408,
         x=0,
         y=0,
@@ -1087,9 +1083,7 @@ class Lucam:
         The window is not automatically resized to the video frame size.
 
         """
-        if not API.LucamCreateDisplayWindow(
-            self._handle, title, style, x, y, width, height, parent, menu
-        ):
+        if not API.LucamCreateDisplayWindow(self._handle, title, style, x, y, width, height, parent, menu):
             raise LucamError(self)
         self._displaying_window = True
 
@@ -1099,7 +1093,7 @@ class Lucam:
             raise LucamError(self)
         self._displaying_window = False
 
-    def AdjustDisplayWindow(self, title=b'', x=0, y=0, width=0, height=0):
+    def AdjustDisplayWindow(self, title=b"", x=0, y=0, width=0, height=0):
         """Scale video stream into preview window.
 
         Parameters
@@ -1114,9 +1108,7 @@ class Lucam:
             Extent of scaled video stream in pixels. Can be used to zoom.
 
         """
-        if not API.LucamAdjustDisplayWindow(
-            self._handle, title, x, y, width, height
-        ):
+        if not API.LucamAdjustDisplayWindow(self._handle, title, x, y, width, height):
             raise LucamError(self)
         self._displaying_window = True
 
@@ -1203,9 +1195,7 @@ class Lucam:
         default = API.FLOAT()
         flags = API.LONG()
         prop = Lucam.PROPERTY.get(prop, prop)
-        if not API.LucamPropertyRange(
-            self._handle, prop, mn, mx, default, flags
-        ):
+        if not API.LucamPropertyRange(self._handle, prop, mn, mx, default, flags):
             raise LucamError(self)
         return mn.value, mx.value, default.value, flags.value
 
@@ -1484,9 +1474,7 @@ class Lucam:
             (2, 2): API.LUCAM_PF_16,
             (3, 2): API.LUCAM_PF_48,
         }[(data.ndim, data.dtype.itemsize)]
-        if not API.LucamSaveImageWEx(
-            self._handle, width, height, pixelformat, pdata, filename
-        ):
+        if not API.LucamSaveImageWEx(self._handle, width, height, pixelformat, pdata, filename):
             raise LucamError(self)
 
     def StreamVideoControl(self, ctrltype, window=0):
@@ -1537,9 +1525,7 @@ class Lucam:
         this function.
 
         """
-        data, pdata = ndarray(
-            self._streaming, self._byteorder, out, validate, numframes
-        )
+        data, pdata = ndarray(self._streaming, self._byteorder, out, validate, numframes)
         if numframes is None:
             numframes = data.shape[0]
         if not API.LucamTakeVideo(self._handle, numframes, pdata):
@@ -1565,7 +1551,7 @@ class Lucam:
         if not API.LucamCancelTakeVideo(self._handle):
             raise LucamError(self)
 
-    def StreamVideoControlAVI(self, ctrltype, filename='', window=0):
+    def StreamVideoControlAVI(self, ctrltype, filename="", window=0):
         """Control capture of the video in a raw 8 bit AVI file.
 
         Parameters
@@ -1589,9 +1575,7 @@ class Lucam:
 
         """
         ctrltype = Lucam.VIDEO_CONTROL.get(ctrltype, ctrltype)
-        if not API.LucamStreamVideoControlAVI(
-            self._handle, ctrltype, filename, window
-        ):
+        if not API.LucamStreamVideoControlAVI(self._handle, ctrltype, filename, window):
             raise LucamError(self)
 
     def ConvertRawAVIToStdVideo(self, outfile, inputfile, outtype=1):
@@ -1608,9 +1592,7 @@ class Lucam:
 
         """
         outtype = Lucam.AVI_TYPE.get(outtype, outtype)
-        if not API.LucamConvertRawAVIToStdVideo(
-            self._handle, outfile, inputfile, outtype
-        ):
+        if not API.LucamConvertRawAVIToStdVideo(self._handle, outfile, inputfile, outtype):
             raise LucamError(self)
 
     def ConvertFrameToRgb24(self):
@@ -1645,9 +1627,7 @@ class Lucam:
         if not API.LucamSetup8bitsLUT(self._handle, lut, lut.size):
             raise LucamError(self)
 
-    def Setup8bitsColorLUT(
-        self, lut, red=False, green1=False, green2=False, blue=False
-    ):
+    def Setup8bitsColorLUT(self, lut, red=False, green1=False, green2=False, blue=False):
         """Populate 8 bit Color LUT inside camera.
 
         Parameters
@@ -1660,9 +1640,7 @@ class Lucam:
 
         """
         lut = numpy.array(lut if lut else [], numpy.uint8)
-        if not API.LucamSetup8bitsColorLUT(
-            self._handle, lut, lut.size, red, green1, green2, blue
-        ):
+        if not API.LucamSetup8bitsColorLUT(self._handle, lut, lut.size, red, green1, green2, blue):
             raise LucamError(self)
 
     def SetupCustomMatrix(self, matrix):
@@ -1679,13 +1657,13 @@ class Lucam:
         the values defined using this function will be used.
 
         """
-        matrix = numpy.array(matrix, 'float32', copy=False)
+        matrix = numpy.array(matrix, "float32", copy=False)
         if not API.LucamSetupCustomMatrix(self._handle, matrix):
             raise LucamError(self)
 
     def GetCurrentMatrix(self):
         """Return current color correction matrix."""
-        matrix = numpy.empty((3, 3), 'float32')
+        matrix = numpy.empty((3, 3), "float32")
         if not API.LucamGetCurrentMatrix(self._handle, matrix):
             raise LucamError(self)
         return matrix
@@ -1706,9 +1684,7 @@ class Lucam:
         callback = API.VideoFilterCallback(callback)
         if context is not None:
             context = ctypes.py_object(context)
-        callbackid = API.LucamAddStreamingCallback(
-            self._handle, callback, context
-        )
+        callbackid = API.LucamAddStreamingCallback(self._handle, callback, context)
         if callbackid == -1:
             raise LucamError(self)
         self._callbacks[(API.VideoFilterCallback, callbackid)] = callback
@@ -1744,9 +1720,7 @@ class Lucam:
         callback = API.SnapshotCallback(callback)
         if context is not None:
             context = ctypes.py_object(context)
-        callbackid = API.LucamAddSnapshotCallback(
-            self._handle, callback, context
-        )
+        callbackid = API.LucamAddSnapshotCallback(self._handle, callback, context)
         if callbackid == -1:
             raise LucamError(self)
         self._callbacks[(API.SnapshotCallback, callbackid)] = callback
@@ -1787,9 +1761,7 @@ class Lucam:
         pixelformat = Lucam.PIXEL_FORMAT.get(pixelformat, pixelformat)
         if context is not None:
             context = ctypes.py_object(context)
-        callbackid = API.LucamAddRgbPreviewCallback(
-            self._handle, callback, context, pixelformat
-        )
+        callbackid = API.LucamAddRgbPreviewCallback(self._handle, callback, context, pixelformat)
         if callbackid == -1:
             raise LucamError(self)
         self._callbacks[(API.RgbVideoFilterCallback, callbackid)] = callback
@@ -1827,9 +1799,7 @@ class Lucam:
             Window coordinates after any subsampling or binning.
 
         """
-        if not API.LucamOneShotAutoExposure(
-            self._handle, target, startx, starty, width, height
-        ):
+        if not API.LucamOneShotAutoExposure(self._handle, target, startx, starty, width, height):
             raise LucamError(self)
 
     def OneShotAutoWhiteBalance(self, startx, starty, width, height):
@@ -1844,14 +1814,10 @@ class Lucam:
         in order to color balance the image.
 
         """
-        if not API.LucamOneShotAutoWhiteBalance(
-            self._handle, startx, starty, width, height
-        ):
+        if not API.LucamOneShotAutoWhiteBalance(self._handle, startx, starty, width, height):
             raise LucamError(self)
 
-    def OneShotAutoWhiteBalanceEx(
-        self, redovergreen, blueovergreen, startx, starty, width, height
-    ):
+    def OneShotAutoWhiteBalanceEx(self, redovergreen, blueovergreen, startx, starty, width, height):
         """Perform one iteration of exposure adjustment to reach target color.
 
         Parameters
@@ -1889,14 +1855,10 @@ class Lucam:
         in order to color balance the image.
 
         """
-        if not API.LucamDigitalWhiteBalance(
-            self._handle, startx, starty, width, height
-        ):
+        if not API.LucamDigitalWhiteBalance(self._handle, startx, starty, width, height):
             raise LucamError(self)
 
-    def LucamDigitalWhiteBalanceEx(
-        self, redovergreen, blueovergreen, startx, starty, width, height
-    ):
+    def LucamDigitalWhiteBalanceEx(self, redovergreen, blueovergreen, startx, starty, width, height):
         """Perform one iteration of digital color gain adjustment.
 
         Parameters
@@ -1977,14 +1939,10 @@ class Lucam:
             Window coordinates after any subsampling or binning.
 
         """
-        if not API.LucamOneShotAutoIris(
-            self._handle, target, startx, starty, width, height
-        ):
+        if not API.LucamOneShotAutoIris(self._handle, target, startx, starty, width, height):
             raise LucamError(self)
 
-    def ContinuousAutoExposureEnable(
-        self, target, startx, starty, width, height, lightingperiod
-    ):
+    def ContinuousAutoExposureEnable(self, target, startx, starty, width, height, lightingperiod):
         """Undocumented function."""
         if not API.LucamContinuousAutoExposureEnable(
             self._handle, target, startx, starty, width, height, lightingperiod
@@ -1996,9 +1954,7 @@ class Lucam:
         if not API.LucamContinuousAutoExposureDisable(self._handle):
             raise LucamError(self)
 
-    def LucamAutoFocusStart(
-        self, startx, starty, width, height, callback=None, context=None
-    ):
+    def LucamAutoFocusStart(self, startx, starty, width, height, callback=None, context=None):
         """Start auto focus calibration.
 
         Parameters
@@ -2096,9 +2052,7 @@ class Lucam:
         pdata = data.ctypes.data_as(API.pUCHAR)
         size = data.size
         assert 0 <= (size - offset) <= 2048
-        if not API.LucamPermanentBufferWrite(
-            self._handle, pdata, offset, size
-        ):
+        if not API.LucamPermanentBufferWrite(self._handle, pdata, offset, size):
             raise LucamError(self)
 
     def GpioRead(self):
@@ -2190,7 +2144,7 @@ class LucamError(Exception):
 
     def __str__(self):
         """Return error message."""
-        return self.CODES.get(self.value, f'Unknown error: {self.value}')
+        return self.CODES.get(self.value, f"Unknown error: {self.value}")
 
     CODES = {
         0: """NoError
@@ -2475,9 +2429,7 @@ class LucamSynchronousSnapshots:
             ppsettings[i] = ctypes.pointer(settings[i])
         self._cameras = cameras
         self._settings = settings
-        self._handle = API.LucamEnableSynchronousSnapshots(
-            numcams, phcameras, ppsettings
-        )
+        self._handle = API.LucamEnableSynchronousSnapshots(numcams, phcameras, ppsettings)
         if not self._handle:
             raise LucamError()
 
@@ -2525,9 +2477,9 @@ class LucamPreviewAVI:
     """Preview AVI file."""
 
     CTRLTYPE = {
-        'stop': API.STOP_AVI,
-        'start': API.START_AVI,
-        'pause': API.PAUSE_AVI,
+        "stop": API.STOP_AVI,
+        "start": API.START_AVI,
+        "pause": API.PAUSE_AVI,
     }
 
     def __init__(self, filename):
@@ -2546,25 +2498,25 @@ class LucamPreviewAVI:
         """Return information about AVI as string."""
         info = self.GetFormat()
         fileformat = (
-            'RAW_LUMENERA',
-            'STANDARD_24',
-            'STANDARD_32',
-            'XVID_24',
-            'STANDARD_8',
+            "RAW_LUMENERA",
+            "STANDARD_24",
+            "STANDARD_32",
+            "XVID_24",
+            "STANDARD_8",
         )[info[2]]
-        return '\n* '.join(
+        return "\n* ".join(
             (
-                '',
-                f'File name: {self._filename}',
-                f'Type: {fileformat}',
-                f'Width: {info[0]}',
-                f'Height: {info[1]}',
-                f'Bit depth: {info[3]}',
-                f'Frame rate: {self.GetFrameRate()}',
-                f'Frame count: {self.GetFrameCount()}',
-                'Duration: {}:{}:{}:{}'.format(*self.GetDuration()),
-                f'Current frame: {self.GetPositionFrame()}',
-                'Current time: {}:{}:{}:{}'.format(*self.GetPositionTime()),
+                "",
+                f"File name: {self._filename}",
+                f"Type: {fileformat}",
+                f"Width: {info[0]}",
+                f"Height: {info[1]}",
+                f"Bit depth: {info[3]}",
+                f"Frame rate: {self.GetFrameRate()}",
+                f"Frame count: {self.GetFrameCount()}",
+                "Duration: {}:{}:{}:{}".format(*self.GetDuration()),
+                f"Current frame: {self.GetPositionFrame()}",
+                "Current time: {}:{}:{}:{}".format(*self.GetPositionTime()),
             )
         )
 
@@ -2595,9 +2547,7 @@ class LucamPreviewAVI:
         seconds = API.LONGLONG()
         millisecs = API.LONGLONG()
         microsecs = API.LONGLONG()
-        if not API.LucamPreviewAVIGetDuration(
-            self._handle, minutes, seconds, millisecs, microsecs
-        ):
+        if not API.LucamPreviewAVIGetDuration(self._handle, minutes, seconds, millisecs, microsecs):
             raise LucamError()
         return minutes.value, seconds.value, millisecs.value, microsecs.value
 
@@ -2621,9 +2571,7 @@ class LucamPreviewAVI:
         seconds = API.LONGLONG()
         millisecs = API.LONGLONG()
         microsecs = API.LONGLONG()
-        if not API.LucamPreviewAVIGetPositionTime(
-            self._handle, minutes, seconds, millisecs, microsecs
-        ):
+        if not API.LucamPreviewAVIGetPositionTime(self._handle, minutes, seconds, millisecs, microsecs):
             raise LucamError()
         return minutes.value, seconds.value, millisecs.value, microsecs.value
 
@@ -2636,9 +2584,7 @@ class LucamPreviewAVI:
 
     def SetPositionTime(self, minutes, seconds, millisecs, microsecs):
         """Set current time based position within AVI file."""
-        if not API.LucamPreviewAVISetPositionTime(
-            self._handle, minutes, seconds, millisecs, microsecs
-        ):
+        if not API.LucamPreviewAVISetPositionTime(self._handle, minutes, seconds, millisecs, microsecs):
             raise LucamError()
 
     def SetPositionFrame(self, framenumber):
@@ -2652,9 +2598,7 @@ class LucamPreviewAVI:
         height = API.LONG()
         filetype = API.LONG()
         bitdepth = API.LONG()
-        if not API.LucamPreviewAVIGetFormat(
-            self._handle, width, height, filetype, bitdepth
-        ):
+        if not API.LucamPreviewAVIGetFormat(self._handle, width, height, filetype, bitdepth):
             raise LucamError()
         return width.value, height.value, filetype.value, bitdepth.value
 
@@ -2707,7 +2651,7 @@ def LucamConvertBmp24ToRgb24(data):
         raise LucamError()
 
 
-def ndarray(frameformat, byteorder='=', out=None, validate=True, numframes=1):
+def ndarray(frameformat, byteorder="=", out=None, validate=True, numframes=1):
     """Return numpy.ndarray and ctypes pointer.
 
     Parameters
@@ -2732,22 +2676,19 @@ def ndarray(frameformat, byteorder='=', out=None, validate=True, numframes=1):
     if out is not None and not validate:
         return out, out.ctypes.data_as(API.pBYTE)
 
-    if (
-        frameformat.width % frameformat.binningX
-        or frameformat.height % frameformat.binningY
-    ):
-        raise ValueError('invalid frame format')
+    if frameformat.width % frameformat.binningX or frameformat.height % frameformat.binningY:
+        raise ValueError("invalid frame format")
 
     width = frameformat.width // frameformat.binningX
     height = frameformat.height // frameformat.binningY
     pformat = frameformat.pixelFormat
 
     if pformat in (0, 2, 6):
-        dtype = numpy.dtype('uint8')
+        dtype = numpy.dtype("uint8")
     elif pformat in (1, 3, 7):
-        dtype = numpy.dtype(byteorder + 'u2')
+        dtype = numpy.dtype(byteorder + "u2")
     else:
-        raise ValueError('pixel format not supported')
+        raise ValueError("pixel format not supported")
 
     if pformat in (0, 1, 3, 4, 5):
         shape = (height, width)
@@ -2756,7 +2697,7 @@ def ndarray(frameformat, byteorder='=', out=None, validate=True, numframes=1):
     elif pformat == 6:
         shape = (4, height, width)
     else:
-        raise ValueError('invalid pixel format')
+        raise ValueError("invalid pixel format")
 
     if out is None:
         if int(numframes) > 1:  # numframes must be provided
@@ -2769,7 +2710,7 @@ def ndarray(frameformat, byteorder='=', out=None, validate=True, numframes=1):
         if numframes > 1:
             shape = (numframes,) + shape
         if numpy.prod(shape) != out.size or dtype != out.dtype:
-            raise ValueError('numpy array does not match image size or type')
+            raise ValueError("numpy array does not match image size or type")
         data = out
 
     return data, data.ctypes.data_as(API.pBYTE)
@@ -2783,100 +2724,94 @@ def list_property_flags(flags):
 def print_property_range(minval, maxval, default, flags):
     """Return string representation of Lucam.PropertyRange() results."""
     if flags:
-        return '[{}, {}] default={} flags={}'.format(
+        return "[{}, {}] default={} flags={}".format(
             minval,
             maxval,
             default,
-            ','.join(k for k, v in Lucam.PROP_FLAG.items() if v & flags),
+            ",".join(k for k, v in Lucam.PROP_FLAG.items() if v & flags),
         )
-    return f'[{minval}, {maxval}] default={default}'
+    return f"[{minval}, {maxval}] default={default}"
 
 
 def print_version(version):
     """Return string representation of version number."""
 
     class Version(ctypes.Union):
-        _fields_ = [('uint', ctypes.c_uint), ('byte', ctypes.c_ubyte * 4)]
+        _fields_ = [("uint", ctypes.c_uint), ("byte", ctypes.c_ubyte * 4)]
 
     result = []
     for i in reversed(Version(uint=version).byte):
         if i or result:
-            result.append(f'{i}')
-    return '.'.join(result)
+            result.append(f"{i}")
+    return ".".join(result)
 
 
-def print_structure(structure, indent=''):
+def print_structure(structure, indent=""):
     """Return string representation of ctypes.Structure."""
-    result = [] if indent else ['']
+    result = [] if indent else [""]
     for field in structure._fields_:
         name = field[0]
         attr = getattr(structure, name)
         if isinstance(attr, ctypes.Structure):
             if name in structure._anonymous_:
-                line = '{}- Struct\n{}'.format(
-                    indent, print_structure(attr, indent + '  ')
-                )
+                line = "{}- Struct\n{}".format(indent, print_structure(attr, indent + "  "))
             else:
-                line = '{}* {}:\n{}'.format(
-                    indent, name, print_structure(attr, indent + '  ')
-                )
+                line = "{}* {}:\n{}".format(indent, name, print_structure(attr, indent + "  "))
         elif isinstance(attr, ctypes.Union):
-            line = '{}- Union\n{}'.format(
-                indent, print_structure(attr, indent + '  ')
-            )
+            line = "{}- Union\n{}".format(indent, print_structure(attr, indent + "  "))
         else:
-            line = f'{indent}* {name}: {attr}'
+            line = f"{indent}* {name}: {attr}"
         result.append(line)
-    return '\n'.join(result)
+    return "\n".join(result)
 
 
 CAMERA_MODEL = {
-    0x091: 'Lu050M, Lu055M (Discontinued)',
-    0x095: 'Lu050C, Lu055C (Discontinued)',
-    0x093: 'Lu056C (Discontinued)',
-    0x08C: 'Lu070M, Lu075M, Lu070C, Lu075C',
-    0x18C: 'Lw070M, Lw075M, Lw070C, Lw075C',
-    0x28C: 'Lm075M, Lm075C',
-    0x085: 'Lu080M, Lu085M, Lu080C, Lu085C',
-    0x284: 'Lm085M, Lm085C',
-    0x092: 'Lu100M, Lu105M, Lu100C, Lu105C',
-    0x094: 'Lu110M, Lu115M, Lu110C, Lu115C (Discontinued)',
-    0x49F: 'Lw110M, Lw115M, Lw110C, Lw115C',
-    0x096: 'Lu120M, Lu125M, Lu120C, Lu125C',
-    0x09A: 'Lu130M, Lu135M, Lu130C, Lu135C',
-    0x19A: 'Lw130M, Lw135M, Lw130C, Lw135C',
-    0x29A: 'Lm135M, Lm135C',
-    0x08A: 'Lu160M, Lu165M, Lu160C, Lu165C',
-    0x18A: 'Lw160M, Lw165M, Lw160C, Lw165C',
-    0x28A: 'Lm165M, Lm165C',
-    0x09E: 'Lu170M, Lu175M, Lu170C, Lu175C',
-    0x082: 'Lu176C',
-    0x097: 'Lu200C, Lu205C',
-    0x180: 'Lw230M, Lw235M, Lw230C, Lw235C',
-    0x08D: 'Lu270C, Lu275C',
-    0x1CD: 'Lw290C, Lw295C',
-    0x09B: 'Lu330C, Lu335C',
-    0x19B: 'Lw330C, Lw335C',
-    0x08B: 'Lu370C, Lu375C',
-    0x1CE: 'Lw560M, Lw565M, Lw560C, Lw565C',
-    0x1C5: 'Lw570M, Lw575M, Lw570C, Lw575C',
-    0x186: 'Lw620M, Lw625M, Lw620C, Lw625C',
-    0x1C8: 'Lw11050C, Lw11056C, Lw11057C, Lw11058C, Lw11059C',
-    0x0A0: 'Infinityx-21M, Infinityx-21C',
-    0x1A9: 'Infinityx-32M, Infinityx-32C',
-    0x0A1: 'Infinity1-1M, Infinity 1M, Infinity1-1C, Infinity 1C',
-    0x4A2: 'Infinity1-2C',
-    0x0A3: 'Infinity1-3C, Infinity 3C',
-    0x1AC: 'Infinity1-5',
-    0x1A6: 'Infinity1-6M, Infinity1-6C',
-    0x0A2: 'Infinity 2M, Infinity 2C',
-    0x1A2: 'Infinity2-1M, Infinity2-1C',
-    0x1A7: 'Infinity2-2M, Infinity2-2C',
-    0x1A4: 'Infinity2-3C',
-    0x1A5: 'Infinity3-1M, Infinity3-1C',
-    0x1AF: 'Infinity3-1UM, Infinity3-1UC',
-    0x1AB: 'Infinity4-4M, Infinity4-4C',
-    0x1A8: 'Infinity4-11M, Infinity4-11C',
+    0x091: "Lu050M, Lu055M (Discontinued)",
+    0x095: "Lu050C, Lu055C (Discontinued)",
+    0x093: "Lu056C (Discontinued)",
+    0x08C: "Lu070M, Lu075M, Lu070C, Lu075C",
+    0x18C: "Lw070M, Lw075M, Lw070C, Lw075C",
+    0x28C: "Lm075M, Lm075C",
+    0x085: "Lu080M, Lu085M, Lu080C, Lu085C",
+    0x284: "Lm085M, Lm085C",
+    0x092: "Lu100M, Lu105M, Lu100C, Lu105C",
+    0x094: "Lu110M, Lu115M, Lu110C, Lu115C (Discontinued)",
+    0x49F: "Lw110M, Lw115M, Lw110C, Lw115C",
+    0x096: "Lu120M, Lu125M, Lu120C, Lu125C",
+    0x09A: "Lu130M, Lu135M, Lu130C, Lu135C",
+    0x19A: "Lw130M, Lw135M, Lw130C, Lw135C",
+    0x29A: "Lm135M, Lm135C",
+    0x08A: "Lu160M, Lu165M, Lu160C, Lu165C",
+    0x18A: "Lw160M, Lw165M, Lw160C, Lw165C",
+    0x28A: "Lm165M, Lm165C",
+    0x09E: "Lu170M, Lu175M, Lu170C, Lu175C",
+    0x082: "Lu176C",
+    0x097: "Lu200C, Lu205C",
+    0x180: "Lw230M, Lw235M, Lw230C, Lw235C",
+    0x08D: "Lu270C, Lu275C",
+    0x1CD: "Lw290C, Lw295C",
+    0x09B: "Lu330C, Lu335C",
+    0x19B: "Lw330C, Lw335C",
+    0x08B: "Lu370C, Lu375C",
+    0x1CE: "Lw560M, Lw565M, Lw560C, Lw565C",
+    0x1C5: "Lw570M, Lw575M, Lw570C, Lw575C",
+    0x186: "Lw620M, Lw625M, Lw620C, Lw625C",
+    0x1C8: "Lw11050C, Lw11056C, Lw11057C, Lw11058C, Lw11059C",
+    0x0A0: "Infinityx-21M, Infinityx-21C",
+    0x1A9: "Infinityx-32M, Infinityx-32C",
+    0x0A1: "Infinity1-1M, Infinity 1M, Infinity1-1C, Infinity 1C",
+    0x4A2: "Infinity1-2C",
+    0x0A3: "Infinity1-3C, Infinity 3C",
+    0x1AC: "Infinity1-5",
+    0x1A6: "Infinity1-6M, Infinity1-6C",
+    0x0A2: "Infinity 2M, Infinity 2C",
+    0x1A2: "Infinity2-1M, Infinity2-1C",
+    0x1A7: "Infinity2-2M, Infinity2-2C",
+    0x1A4: "Infinity2-3C",
+    0x1A5: "Infinity3-1M, Infinity3-1C",
+    0x1AF: "Infinity3-1UM, Infinity3-1UC",
+    0x1AB: "Infinity4-4M, Infinity4-4C",
+    0x1A8: "Infinity4-11M, Infinity4-11C",
 }
 
 
@@ -2887,15 +2822,15 @@ def test():
     # print serial numbers of all connected cameras
     allcameras = LucamEnumCameras()
     print(
-        'Cameras found:',
-        ', '.join(str(cam.serialnumber) for cam in allcameras),
+        "Cameras found:",
+        ", ".join(str(cam.serialnumber) for cam in allcameras),
     )
 
     # use first camera
     lucam = Lucam(1)
 
     # print detailed information about camera
-    print('Camera Properties', lucam)
+    print("Camera Properties", lucam)
 
     # set camera to 16 bit, 4x4 binning, max framerate
     lucam.SetFormat(
@@ -2927,11 +2862,11 @@ def test():
     # get actual frame format, framerate, and bit depth
     frameformat, framerate = lucam.GetFormat()
     pixeldepth = lucam.GetTruePixelDepth()
-    print('Pixel Depth:', pixeldepth)
-    print('Framerate:', framerate)
-    print('Frame Format', frameformat)
+    print("Pixel Depth:", pixeldepth)
+    print("Framerate:", framerate)
+    print("Frame Format", frameformat)
 
-    print('Color correction matrix:')
+    print("Color correction matrix:")
     print(lucam.GetCurrentMatrix())
 
     # take snapshot, the easy way
@@ -2941,9 +2876,7 @@ def test():
     lucam.TakeSnapshot(out=image)
 
     # take multiple snapshots
-    snapshot = Lucam.Snapshot(
-        exposure=lucam.exposure, gain=1.0, timeout=1000.0, format=frameformat
-    )
+    snapshot = Lucam.Snapshot(exposure=lucam.exposure, gain=1.0, timeout=1000.0, format=frameformat)
     lucam.EnableFastFrames(snapshot)
     for _ in range(8):
         lucam.TakeFastFrame(image, validate=False)
@@ -2957,12 +2890,12 @@ def test():
         # might time out if no HW trigger
         lucam.TakeFastFrame(image)
     except LucamError:
-        print('TakeFastFrame() timed out')
+        print("TakeFastFrame() timed out")
     try:
         # retrieve previous image
         lucam.TakeFastFrameNoTrigger(image)
     except LucamError:
-        print('TakeFastFrameNoTrigger() timed out')
+        print("TakeFastFrameNoTrigger() timed out")
     # request to take snapshot
     lucam.TriggerFastFrame()
     lucam.TakeFastFrame(image)
@@ -2975,27 +2908,25 @@ def test():
     numpy.fill_diagonal(image, 255)
 
     # save last image as TIFF file
-    lucam.SaveImage(image, '_tmp.tif')
+    lucam.SaveImage(image, "_tmp.tif")
 
     # take video in streaming mode
-    lucam.StreamVideoControl('start_streaming')  # streaming without display
+    lucam.StreamVideoControl("start_streaming")  # streaming without display
     video = lucam.TakeVideo(8)  # take a 8 frames video
     lucam.TakeVideo(None, out=video)  # take another video into same buffer
-    lucam.StreamVideoControl('stop_streaming')
+    lucam.StreamVideoControl("stop_streaming")
 
     # save first video frame as RAW file
-    lucam.SaveImage(video, '_tmp.raw')
+    lucam.SaveImage(video, "_tmp.raw")
 
     # preview video stream in window
-    lucam.CreateDisplayWindow(b'Test')
-    lucam.StreamVideoControl('start_display')
+    lucam.CreateDisplayWindow(b"Test")
+    lucam.StreamVideoControl("start_display")
     time.sleep(1.0)
-    lucam.AdjustDisplayWindow(
-        width=frameformat.width * 2, height=frameformat.height * 2
-    )
+    lucam.AdjustDisplayWindow(width=frameformat.width * 2, height=frameformat.height * 2)
     time.sleep(1.0)
-    print(f'Display rate: {lucam.QueryDisplayFrameRate():.2f}')
-    lucam.StreamVideoControl('stop_streaming')
+    print(f"Display rate: {lucam.QueryDisplayFrameRate():.2f}")
+    lucam.StreamVideoControl("stop_streaming")
     lucam.DestroyDisplayWindow()
 
     # reset camera to power-on defaults
@@ -3021,7 +2952,7 @@ def test():
     # run a callback function during snapshot
     def snapshot_callback(context, data, size):
         data[0] = 42
-        print('Snapshot callback function:', context, data[:2], size)
+        print("Snapshot callback function:", context, data[:2], size)
 
     callbackid = lucam.AddSnapshotCallback(snapshot_callback)
     image = lucam.TakeSnapshot()
@@ -3031,31 +2962,31 @@ def test():
     # run a callback function in streaming mode
     def streaming_callback(context, data, size):
         data[0] = 42
-        print('Streaming callback function:', context, data[:2], size)
+        print("Streaming callback function:", context, data[:2], size)
 
     callbackid = lucam.AddStreamingCallback(streaming_callback)
-    lucam.StreamVideoControl('start_streaming')
+    lucam.StreamVideoControl("start_streaming")
     time.sleep(2.0 / framerate)
-    lucam.StreamVideoControl('stop_streaming')
+    lucam.StreamVideoControl("stop_streaming")
     lucam.RemoveStreamingCallback(callbackid)
 
     # set camera look up table to invers
     lucam.Setup8bitsLUT(list(reversed(range(256))))
 
     # stream to AVI file
-    lucam.StreamVideoControlAVI('start_streaming', '_tmp.avi')
+    lucam.StreamVideoControlAVI("start_streaming", "_tmp.avi")
     time.sleep(1.0)
-    lucam.StreamVideoControlAVI('stop_streaming')
+    lucam.StreamVideoControlAVI("stop_streaming")
 
     # reset camera look up table
     lucam.Setup8bitsLUT(None)
 
     # convert 8 bit AVI to 24 bit.
-    lucam.ConvertRawAVIToStdVideo('_tmp24.avi', '_tmp.avi', 'standard_24')
+    lucam.ConvertRawAVIToStdVideo("_tmp24.avi", "_tmp.avi", "standard_24")
 
     # Read user-defined non-volatile memory
     memory = lucam.PermanentBufferRead()
-    print('Non-volatile memory:', memory)
+    print("Non-volatile memory:", memory)
 
     # close camera connection
     lucam.CameraClose()
@@ -3069,15 +3000,15 @@ def test():
     sync.Disable()
 
     # preview AVI files
-    avi = LucamPreviewAVI('_tmp.avi')
-    avi.Control('start')
+    avi = LucamPreviewAVI("_tmp.avi")
+    avi.Control("start")
     time.sleep(1.0)
-    avi.Control('pause')
+    avi.Control("pause")
     avi.SetPositionFrame(avi.GetFrameCount() // 2)
-    avi.Control('stop')
-    print('AVI Properties', avi)
-    print('Done')
+    avi.Control("stop")
+    print("AVI Properties", avi)
+    print("Done")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test()
