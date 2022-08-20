@@ -95,7 +95,7 @@ Refer to the test() function at the end of the module for more examples.
 
 """
 
-__version__ = "2021.6.6"
+__version__ = "2022.8.20"
 
 __all__ = (
     "API",
@@ -122,7 +122,13 @@ def API():
 
     """
     from numpy.ctypeslib import ndpointer
-    from ctypes import c_int, c_char_p, c_void_p, POINTER, WINFUNCTYPE
+    from ctypes import c_int, c_char_p, c_void_p, POINTER
+
+    try:
+        from ctypes import WINFUNCTYPE as FUNCTYPE
+    except ImportError:
+        from ctypes import CFUNCTYPE as FUNCTYPE
+
     from ctypes.wintypes import (
         BOOL,
         BYTE,
@@ -306,11 +312,11 @@ def API():
     pLUCAM_IMAGE_FORMAT = POINTER(LUCAM_IMAGE_FORMAT)
 
     # Callback function types
-    SnapshotCallback = WINFUNCTYPE(None, c_void_p, pBYTE, ULONG)
-    VideoFilterCallback = WINFUNCTYPE(None, c_void_p, pBYTE, ULONG)
-    RgbVideoFilterCallback = WINFUNCTYPE(None, c_void_p, pBYTE, ULONG, ULONG)
-    ProgressCallback = WINFUNCTYPE(BOOL, c_void_p, FLOAT)
-    Rs232Callback = WINFUNCTYPE(None, c_void_p)
+    SnapshotCallback = FUNCTYPE(None, c_void_p, pBYTE, ULONG)
+    VideoFilterCallback = FUNCTYPE(None, c_void_p, pBYTE, ULONG)
+    RgbVideoFilterCallback = FUNCTYPE(None, c_void_p, pBYTE, ULONG, ULONG)
+    ProgressCallback = FUNCTYPE(BOOL, c_void_p, FLOAT)
+    Rs232Callback = FUNCTYPE(None, c_void_p)
 
     # Function return and argument types
     LucamNumCameras = (LONG,)
@@ -760,8 +766,10 @@ def API():
 
     if sys.platform == "win32":
         _api = ctypes.windll.LoadLibrary("lucamapi.dll")
+    elif sys.platform == "linux":
+        _api = ctypes.LibraryLoader(ctypes.CDLL).LoadLibrary(name="liblucamapi.so")
     else:
-        raise NotImplementedError("only Windows is supported")
+        raise NotImplementedError("Only Windows and Linux are supported")
 
     for _name, _value in locals().items():
         if _name.startswith("Lucam"):
@@ -2396,9 +2404,93 @@ class LucamError(Exception):
         97: """Lut8Obsolete
             Use 12 bits LUT instead.""",
         98: """FunctionNotSupported
-            That functionnality is not supported.""",
+            That functionality is not supported.""",
         99: """RetryLimitReached
             Property access failed due to a retry limit.""",
+        100: """LucamLgDeviceError
+            An IO operation to the camera failed.""",
+        101: """LucamInvalidIpConfiguration
+            The Lg camera has an invalid IP configuration.""",
+        102: """LucamInvalidLicense
+            The license to operate the camera is invalid""",
+        103: """LucamNoSystemEnumerator
+            Camera enumeration is impossible due to a software installation error.""",
+        104: """LucamBusEnumeratorNotInstalled
+            Camera enumeration is impossible due to a software installation error.""",
+        105: """LucamUnknownExternInterface
+            Unknown external interface.""",
+        106: """LucamInterfaceDriverNotInstalled
+            Incomplete or incorrect software installation prevents streaming from the camera.""",
+        107: """LucamCameraDriverNotInstalled
+            Incomplete or incorrect software installation prevents streaming from the camera. Opening the device manager and updating the drivers on the relevant device may fix the issue.""",
+        108: """LucamCameraDriverInstallInProgress
+            Incomplete or incorrect software installation prevents streaming from the camera. Opening the device manager and updating the drivers on the relevant device may fix the issue.""",
+        109: """LucamLucamapiDotDllNotFound
+            Lucamapi.dll is not found.""",
+        110: """LucamLucamapiProcedureNotFound
+            A procedure in Lucamapi.dll was not found.""",
+        111: """LucamPropertyNotEnumeratable
+            The property cannot be accessed via LucamEnumProperty.""",
+        112: """LucamPropertyNotBufferable
+            The property cannot be accessed via LucamPropertyGetBuffer.""",
+        113: """LucamSingleTapImage
+            The API cannot perform multi tap correction on a single tap image.""",
+        114: """LucamUnknownTapConfiguration
+            The API is too old and does not know the tap configuration of the image..""",
+        115: """LucamBufferTooSmall
+            A buffer supplied to the API is too small.""",
+        116: """LucamInCallbackOnly
+            A function that can only be called within a callback was called elsewhere.""",
+        117: """LucamPropertyUnavailable
+            The property is not available at this moment.""",
+        118: """LucamTimestampNotEnabled
+            The API cannot extract timestamp from the image buffer because feature was not enabled.""",
+        119: """LucamFramecounterNotEnabled
+            The API cannot extract frame counter from the image buffer because feature was not enabled.""",
+        120: """LucamNoStatsWhenNotStreaming
+            LucamQueryStats was called but the camera is not streaming.""",
+        121: """LucamFrameCapturePending
+            LucamTakeVideo or LucamTakeFastFrame or one of its variant was called from multiple threads. This is bad practice.""",
+        122: """LucamSequencingNotEnabled
+            An API failed because sequencing was not enabled.""",
+        123: """LucamFeatureNotSequencable
+            Sequencing was attempted on a non-sequencable feature/property.""",
+        124: """LucamSequencingUnknownFeatureType
+            Only the property feature type is supported for sequencing.""",
+        125: """LucamSequencingIndexOutOfSequence
+            Sequence capture failed because a received frame is out of sequence""",
+        126: """LucamSequencingBadFrameNumber
+            Sequence setup failed because a setting's frame number was invalid.""",
+        127: """LucamInformationNotAvailable
+            Supported binning and subsampling information is not available.""",
+        128: """LucamSequencingBadSetting
+            Sequence setup failed because a setting's size is invalid.""",
+        129: """LucamAutoFocusNeverStarted
+            LucamAutoFocusWait was called but auto focus was never started.""",
+        130: """LucamAutoFocusNotRunning
+            LucamAutoFocusStop was called but auto focus is not running.""",
+        1121: """LucamCameraNotOpenable
+            The camera cannot be opened.""",
+        1122: """LucamCameraNotSupported
+            The camera is not supported by the lucamapi.""",
+        1123: """LucamMmapFailed
+            An internal operation failed.""",
+        1124: """LucamNotWhileStreaming
+            The API cannot work while streaming is enabled.""",
+        1125: """LucamNoStreamingRights
+            The camera was opened without streaming rights enabled.""",
+        1126: """LucamCameraInitializationError
+            Unspecified camera initialization error.""",
+        1127: """LucamCannotVerifyPixelFormat
+            The API cannot verify the pixel format with the camera.""",
+        1128: """LucamCannotVerifyStartPosition
+            The API cannot verify the start position with the camera.""",
+        1129: """LucamOsError
+            An OS service failed, possibly due to an application kill.""",
+        1130: """LucamBufferNotAvailable
+            The frame buffer is not available for capturing a frame.""",
+        1131: """LucamQueuingFailed
+            Cannot queue buffer for capturing a frame.""",
     }
 
 
