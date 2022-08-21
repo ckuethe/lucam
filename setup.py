@@ -10,7 +10,7 @@ from setuptools import setup
 with open("lucam/lucam.py") as fh:
     code = fh.read()
 
-version = re.search(r"__version__ = '(.*?)'", code).groups()[0]
+version = re.search(r'__version__ = "(.*?)"', code).groups()[0]
 
 description = re.search(r'"""(.*)\.(?:\r\n|\r|\n)', code).groups()[0]
 
