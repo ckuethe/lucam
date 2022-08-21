@@ -181,7 +181,7 @@ def API():
             ("api", ULONG),
             ("driver", ULONG),
             ("serialnumber", ULONG),
-            ("reserved", ULONG),
+            ("product", ULONG),
         ]
 
         def __str__(self):
