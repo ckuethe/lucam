@@ -129,6 +129,13 @@ def API():
     except ImportError:
         from ctypes import CFUNCTYPE as FUNCTYPE
 
+    # FIXME these are not portable.
+    # LuCAM API specifies that various structure members and parameters
+    # are 16 or 32 bits long, rather than being able to rely on a fixed
+    # size of int/uint/long/ulong ... Perhaps these are more consistent
+    # on windows, but this is not so reliable on Linux. This is becomes
+    # clear from the different results from QueryVersion() and the demo
+    # getCameraInfo program.
     from ctypes.wintypes import (
         BOOL,
         BYTE,
