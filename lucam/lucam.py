@@ -124,11 +124,6 @@ def API():
     from numpy.ctypeslib import ndpointer
     from ctypes import c_int, c_char_p, c_void_p, POINTER
 
-    try:
-        from ctypes import WINFUNCTYPE as FUNCTYPE
-    except ImportError:
-        from ctypes import CFUNCTYPE as FUNCTYPE
-
     # FIXME these are not portable.
     # LuCAM API specifies that various structure members and parameters
     # are 16 or 32 bits long, rather than being able to rely on a fixed
@@ -140,8 +135,6 @@ def API():
         BOOL,
         BYTE,
         FLOAT,
-        LONG,
-        ULONG,
         USHORT,
         DWORD,
         LPCSTR,
@@ -150,6 +143,17 @@ def API():
         HWND,
         HMENU,
     )
+
+    if sys.platform == "win32":
+        from ctypes import WINFUNCTYPE as FUNCTYPE
+        from ctypes.wintypes import (
+            LONG,
+            ULONG,
+        )
+    else:
+        from ctypes import CFUNCTYPE as FUNCTYPE
+        ULONG = ctypes.c_uint32
+        LONG = ctypes.c_int32
 
     UNIMPLEMENTED_FUNCS = []
     pUCHAR_LUT = ndpointer(dtype="uint8", ndim=1, flags="C_CONTIGUOUS")
