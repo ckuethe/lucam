@@ -827,9 +827,10 @@ def API():
                 setattr(_func, "restype", _value[0])
                 setattr(_func, "argtypes", _value[1:])
             except AttributeError:
-                # FIXME > This should probably raise NotImplementedError if an unavailable function is called at runtime
+                # No attempt is made to filter out functions not implemented on some particular platform
+                # so calling these will raise AttributeError at runtime:
+                # `AttributeError: /lib/liblucamapi.so: undefined symbol: LucamContinuousAutoExposureEnable`
                 UNIMPLEMENTED_FUNCS.append(_name)
-                print(f"Lucam API function {_name} not available on this platform")
         elif not _name.startswith("_"):
             setattr(_api, _name, _value)
     return _api
