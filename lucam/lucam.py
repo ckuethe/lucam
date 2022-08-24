@@ -1,6 +1,7 @@
 # lucam.py
 
 # Copyright (c) 2010-2021, Christoph Gohlke
+# Copyright (c) 2022, Chris Kuethe
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -42,14 +43,12 @@ LuCam API:
   images.
 
 :Author:
-  `Christoph Gohlke <https://www.lfd.uci.edu/~gohlke/>`_
-
-:Organization:
-  Laboratory for Fluorescence Dynamics. University of California, Irvine
+  `Christoph Gohlke <https://www.lfd.uci.edu/~gohlke/>`_ , Laboratory for Fluorescence Dynamics. University of California, Irvine
+  `Chris Kuethe <https://github.com/ckuethe/>`
 
 :License: BSD 3-Clause
 
-:Version: 2021.6.6
+:Version: 2022.8.20
 
 Requirements
 ------------
@@ -59,16 +58,12 @@ Requirements
 
 Revisions
 ---------
-2021.6.6
-    Remove support for Python 3.6 (NEP 29).
-2020.1.1
-    Remove support for Python 2.7 and 3.5.
+2022.8.20
+  Fork to take over maintainership, and add linux support
 
 Notes
 -----
 "Lumenera" is a registered trademark of Lumenera Corporation (1).
-
-Lucam is no longer being actively developed.
 
 Lucam has been tested with the Lu165M monochrome camera on Windows only.
 
@@ -145,6 +140,7 @@ def API():
         )
     else:
         from ctypes import CFUNCTYPE as FUNCTYPE
+
         ULONG = ctypes.c_uint32
         LONG = ctypes.c_int32
 
@@ -155,7 +151,9 @@ def API():
 
     UCHAR = ctypes.c_ubyte
     LONGLONG = ctypes.c_longlong
+    ULONGLONG = ctypes.c_ulonglong
     LPCTSTR = LPCSTR
+    pBOOL = POINTER(BOOL)
     pBYTE = POINTER(BYTE)
     pUCHAR = POINTER(UCHAR)
     pFLOAT = POINTER(FLOAT)
@@ -164,6 +162,7 @@ def API():
     pUSHORT = POINTER(USHORT)
     pHANDLE = POINTER(HANDLE)
     pLONGLONG = POINTER(LONGLONG)
+    pULONGLONG = POINTER(ULONGLONG)
 
     class LUCAM_VERSION(ctypes.Structure):
         """Lucam version structure."""
@@ -324,33 +323,31 @@ def API():
     Rs232Callback = FUNCTYPE(None, c_void_p)
 
     # Function return and argument types
-    LucamNumCameras = (LONG,)
-    LucamEnumCameras = (LONG, pLUCAM_VERSION, ULONG)
-    LucamCameraOpen = (HANDLE, ULONG)
-    LucamCameraClose = (BOOL, HANDLE)
-    LucamCameraReset = (BOOL, HANDLE)
-    LucamQueryVersion = (BOOL, HANDLE, pLUCAM_VERSION)
-    LucamQueryExternInterface = (BOOL, HANDLE, pULONG)
-    LucamGetCameraId = (BOOL, HANDLE, pULONG)
-    LucamGetProperty = (BOOL, HANDLE, ULONG, pFLOAT, pLONG)
-    LucamSetProperty = (BOOL, HANDLE, ULONG, FLOAT, LONG)
-    LucamPropertyRange = (BOOL, HANDLE, ULONG, pFLOAT, pFLOAT, pFLOAT, pLONG)
-    LucamDisplayPropertyPage = (BOOL, HANDLE, HWND)
-    LucamDisplayVideoFormatPage = (BOOL, HANDLE, HWND)
-    LucamQueryDisplayFrameRate = (BOOL, HANDLE, pFLOAT)
-    LucamCreateDisplayWindow = (
+    LucamAddRgbPreviewCallback = (
+        LONG,
+        HANDLE,
+        RgbVideoFilterCallback,
+        c_void_p,
+        ULONG,
+    )
+    LucamAddRs232Callback = (
         BOOL,
         HANDLE,
-        LPCTSTR,
-        ULONG,
-        c_int,
-        c_int,
-        c_int,
-        c_int,
-        HWND,
-        HMENU,
+        Rs232Callback,
+        c_void_p,
     )
-    LucamDestroyDisplayWindow = (BOOL, HANDLE)
+    LucamAddSnapshotCallback = (
+        LONG,
+        HANDLE,
+        SnapshotCallback,
+        c_void_p,
+    )
+    LucamAddStreamingCallback = (
+        LONG,
+        HANDLE,
+        VideoFilterCallback,
+        c_void_p,
+    )
     LucamAdjustDisplayWindow = (
         BOOL,
         HANDLE,
@@ -359,171 +356,6 @@ def API():
         c_int,
         c_int,
         c_int,
-    )
-    LucamReadRegister = (BOOL, HANDLE, LONG, LONG, pLONG)
-    LucamWriteRegister = (BOOL, HANDLE, LONG, LONG, pLONG)
-    LucamSetFormat = (BOOL, HANDLE, pLUCAM_FRAME_FORMAT, FLOAT)
-    LucamGetFormat = (BOOL, HANDLE, pLUCAM_FRAME_FORMAT, pFLOAT)
-    LucamEnumAvailableFrameRates = (ULONG, HANDLE, ULONG, pFLOAT)
-    LucamStreamVideoControl = (BOOL, HANDLE, ULONG, HWND)
-    LucamStreamVideoControlAVI = (BOOL, HANDLE, ULONG, LPCWSTR, HWND)
-    LucamTakeVideo = (BOOL, HANDLE, LONG, pBYTE)
-    LucamTakeVideoEx = (BOOL, HANDLE, pBYTE, pULONG, ULONG)
-    LucamCancelTakeVideo = (BOOL, HANDLE)
-    LucamTakeSnapshot = (BOOL, HANDLE, pLUCAM_SNAPSHOT, pBYTE)
-    LucamSaveImage = (BOOL, ULONG, ULONG, ULONG, pBYTE, LPCSTR)  # deprecated
-    LucamSaveImageEx = (BOOL, HANDLE, ULONG, ULONG, ULONG, pBYTE, LPCSTR)
-    LucamSaveImageW = (BOOL, ULONG, ULONG, ULONG, pBYTE, LPCWSTR)  # deprecated
-    LucamSaveImageWEx = (BOOL, HANDLE, ULONG, ULONG, ULONG, pBYTE, LPCWSTR)
-    LucamAddStreamingCallback = (LONG, HANDLE, VideoFilterCallback, c_void_p)
-    LucamRemoveStreamingCallback = (BOOL, HANDLE, LONG)
-    LucamAddRgbPreviewCallback = (
-        LONG,
-        HANDLE,
-        RgbVideoFilterCallback,
-        c_void_p,
-        ULONG,
-    )
-    LucamRemoveRgbPreviewCallback = (BOOL, HANDLE, LONG)
-    LucamQueryRgbPreviewPixelFormat = (BOOL, HANDLE, pULONG)
-    LucamAddSnapshotCallback = (LONG, HANDLE, SnapshotCallback, c_void_p)
-    LucamRemoveSnapshotCallback = (BOOL, HANDLE, LONG)
-    LucamConvertFrameToRgb24 = (
-        BOOL,
-        HANDLE,
-        pUCHAR_RGB,
-        pBYTE,
-        ULONG,
-        ULONG,
-        ULONG,
-        pLUCAM_CONVERSION,
-    )
-    LucamConvertFrameToRgb32 = (
-        BOOL,
-        HANDLE,
-        pBYTE,
-        pBYTE,
-        ULONG,
-        ULONG,
-        ULONG,
-        pLUCAM_CONVERSION,
-    )
-    LucamConvertFrameToRgb48 = (
-        BOOL,
-        HANDLE,
-        pUSHORT,
-        pUSHORT,
-        ULONG,
-        ULONG,
-        ULONG,
-        pLUCAM_CONVERSION,
-    )
-    LucamConvertFrameToGreyscale8 = (
-        BOOL,
-        HANDLE,
-        pBYTE,
-        pBYTE,
-        ULONG,
-        ULONG,
-        ULONG,
-        pLUCAM_CONVERSION,
-    )
-    LucamConvertFrameToGreyscale16 = (
-        BOOL,
-        HANDLE,
-        pUSHORT,
-        pUSHORT,
-        ULONG,
-        ULONG,
-        ULONG,
-        pLUCAM_CONVERSION,
-    )
-    LucamConvertBmp24ToRgb24 = (None, pUCHAR_RGB, ULONG, ULONG)
-    LucamConvertRawAVIToStdVideo = (BOOL, HANDLE, LPCWSTR, LPCWSTR, ULONG)
-    LucamPreviewAVIOpen = (HANDLE, LPCWSTR)
-    LucamPreviewAVIClose = (BOOL, HANDLE)
-    LucamPreviewAVIControl = (BOOL, HANDLE, ULONG, HWND)
-    LucamPreviewAVIGetDuration = (
-        BOOL,
-        HANDLE,
-        pLONGLONG,
-        pLONGLONG,
-        pLONGLONG,
-        pLONGLONG,
-    )
-    LucamPreviewAVIGetFrameCount = (BOOL, HANDLE, pLONGLONG)
-    LucamPreviewAVIGetFrameRate = (BOOL, HANDLE, pFLOAT)
-    LucamPreviewAVIGetPositionTime = (
-        BOOL,
-        HANDLE,
-        pLONGLONG,
-        pLONGLONG,
-        pLONGLONG,
-        pLONGLONG,
-    )
-    LucamPreviewAVIGetPositionFrame = (BOOL, HANDLE, pLONGLONG)
-    LucamPreviewAVISetPositionTime = (
-        BOOL,
-        HANDLE,
-        LONGLONG,
-        LONGLONG,
-        LONGLONG,
-        LONGLONG,
-    )
-    LucamPreviewAVISetPositionFrame = (BOOL, HANDLE, LONGLONG)
-    LucamPreviewAVIGetFormat = (BOOL, HANDLE, pLONG, pLONG, pLONG, pLONG)
-    LucamSetupCustomMatrix = (BOOL, HANDLE, pFLOAT_MATRIX33)
-    LucamGetCurrentMatrix = (BOOL, HANDLE, pFLOAT_MATRIX33)
-    LucamEnableFastFrames = (BOOL, HANDLE, pLUCAM_SNAPSHOT)
-    LucamTakeFastFrame = (BOOL, HANDLE, pBYTE)
-    LucamForceTakeFastFrame = (BOOL, HANDLE, pBYTE)
-    LucamTakeFastFrameNoTrigger = (BOOL, HANDLE, pBYTE)
-    LucamDisableFastFrames = (BOOL, HANDLE)
-    LucamSetTriggerMode = (BOOL, HANDLE, BOOL)
-    LucamTriggerFastFrame = (BOOL, HANDLE)
-    LucamCancelTakeFastFrame = (BOOL, HANDLE)
-    LucamEnableSynchronousSnapshots = (
-        HANDLE,
-        ULONG,
-        pHANDLE,
-        POINTER(pLUCAM_SNAPSHOT),
-    )
-    LucamTakeSynchronousSnapshots = (BOOL, HANDLE, POINTER(pBYTE))
-    LucamDisableSynchronousSnapshots = (BOOL, HANDLE)
-    LucamGpioRead = (BOOL, HANDLE, pBYTE, pBYTE)
-    LucamGpioWrite = (BOOL, HANDLE, BYTE)
-    LucamGpoSelect = (BOOL, HANDLE, BYTE)
-    LucamGpioConfigure = (BOOL, HANDLE, BYTE)
-    LucamOneShotAutoExposure = (
-        BOOL,
-        HANDLE,
-        UCHAR,
-        ULONG,
-        ULONG,
-        ULONG,
-        ULONG,
-    )
-    LucamOneShotAutoWhiteBalance = (BOOL, HANDLE, ULONG, ULONG, ULONG, ULONG)
-    LucamOneShotAutoWhiteBalanceEx = (
-        BOOL,
-        HANDLE,
-        FLOAT,
-        FLOAT,
-        ULONG,
-        ULONG,
-        ULONG,
-        ULONG,
-    )
-    LucamDigitalWhiteBalance = (BOOL, HANDLE, ULONG, ULONG, ULONG, ULONG)
-    LucamDigitalWhiteBalanceEx = (
-        BOOL,
-        HANDLE,
-        FLOAT,
-        FLOAT,
-        ULONG,
-        ULONG,
-        ULONG,
-        ULONG,
     )
     LucamAdjustWhiteBalanceFromSnapshot = (
         BOOL,
@@ -537,18 +369,11 @@ def API():
         ULONG,
         ULONG,
     )
-    LucamOneShotAutoIris = (BOOL, HANDLE, UCHAR, ULONG, ULONG, ULONG, ULONG)
-    LucamContinuousAutoExposureEnable = (
+    LucamAutoFocusQueryProgress = (
         BOOL,
         HANDLE,
-        UCHAR,
-        ULONG,
-        ULONG,
-        ULONG,
-        ULONG,
-        FLOAT,
+        pFLOAT,
     )
-    LucamContinuousAutoExposureDisable = (BOOL, HANDLE)
     LucamAutoFocusStart = (
         BOOL,
         HANDLE,
@@ -562,11 +387,732 @@ def API():
         ProgressCallback,
         c_void_p,
     )
-    LucamAutoFocusWait = (BOOL, HANDLE, DWORD)
-    LucamAutoFocusStop = (BOOL, HANDLE)
-    LucamAutoFocusQueryProgress = (BOOL, HANDLE, pFLOAT)
-    LucamInitAutoLens = (BOOL, HANDLE, BOOL)
-    LucamSetup8bitsLUT = (BOOL, HANDLE, pUCHAR_LUT, ULONG)
+    LucamAutoFocusStop = (
+        BOOL,
+        HANDLE,
+    )
+    LucamAutoFocusWait = (
+        BOOL,
+        HANDLE,
+        DWORD,
+    )
+    LucamAutoRoiGet = (
+        BOOL,
+        HANDLE,
+        pLONG,
+        pLONG,
+        pLONG,
+        pLONG,
+    )
+    LucamAutoRoiSet = (
+        BOOL,
+        HANDLE,
+        LONG,
+        LONG,
+        LONG,
+        LONG,
+    )
+    LucamCameraClose = (
+        BOOL,
+        HANDLE,
+    )
+    LucamCameraOpen = (
+        HANDLE,
+        ULONG,
+    )
+    LucamCameraReset = (
+        BOOL,
+        HANDLE,
+    )
+    LucamCancelTakeFastFrame = (
+        BOOL,
+        HANDLE,
+    )
+    LucamCancelTakeVideo = (
+        BOOL,
+        HANDLE,
+    )
+    LucamContinuousAutoExposureDisable = (
+        BOOL,
+        HANDLE,
+    )
+    LucamContinuousAutoExposureEnable = (
+        BOOL,
+        HANDLE,
+        UCHAR,
+        ULONG,
+        ULONG,
+        ULONG,
+        ULONG,
+        FLOAT,
+    )
+    LucamConvertBmp24ToRgb24 = (
+        None,
+        pUCHAR_RGB,
+        ULONG,
+        ULONG,
+    )
+    LucamConvertFrameToGreyscale16 = (
+        BOOL,
+        HANDLE,
+        pUSHORT,
+        pUSHORT,
+        ULONG,
+        ULONG,
+        ULONG,
+        pLUCAM_CONVERSION,
+    )
+    LucamConvertFrameToGreyscale16Ex = (
+        BOOL,
+        HANDLE,
+        pUSHORT,
+        pUSHORT,
+        pLUCAM_IMAGE_FORMAT,
+        pLUCAM_CONVERSION_PARAMS,
+    )
+    LucamConvertFrameToGreyscale8 = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+        pBYTE,
+        ULONG,
+        ULONG,
+        ULONG,
+        pLUCAM_CONVERSION,
+    )
+    LucamConvertFrameToGreyscale8Ex = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+        pBYTE,
+        pLUCAM_IMAGE_FORMAT,
+        pLUCAM_CONVERSION_PARAMS,
+    )
+    LucamConvertFrameToRgb24 = (
+        BOOL,
+        HANDLE,
+        pUCHAR_RGB,
+        pBYTE,
+        ULONG,
+        ULONG,
+        ULONG,
+        pLUCAM_CONVERSION,
+    )
+    LucamConvertFrameToRgb24Ex = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+        pBYTE,
+        pLUCAM_IMAGE_FORMAT,
+        pLUCAM_CONVERSION_PARAMS,
+    )
+    LucamConvertFrameToRgb24NC = (
+        BOOL,
+        pBYTE,
+        pBYTE,
+        pBYTE,
+    )
+    LucamConvertFrameToRgb32 = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+        pBYTE,
+        ULONG,
+        ULONG,
+        ULONG,
+        pLUCAM_CONVERSION,
+    )
+    LucamConvertFrameToRgb32Ex = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+        pBYTE,
+        pLUCAM_IMAGE_FORMAT,
+        pLUCAM_CONVERSION_PARAMS,
+    )
+    LucamConvertFrameToRgb32NC = (
+        BOOL,
+        pBYTE,
+        pBYTE,
+        pBYTE,
+    )
+    LucamConvertFrameToRgb48 = (
+        BOOL,
+        HANDLE,
+        pUSHORT,
+        pUSHORT,
+        ULONG,
+        ULONG,
+        ULONG,
+        pLUCAM_CONVERSION,
+    )
+    LucamConvertFrameToRgb48Ex = (
+        BOOL,
+        HANDLE,
+        pUSHORT,
+        pUSHORT,
+        pLUCAM_IMAGE_FORMAT,
+        pLUCAM_CONVERSION_PARAMS,
+    )
+    LucamConvertFrameToRgb48NC = (
+        BOOL,
+        pUSHORT,
+        pUSHORT,
+        pBYTE,
+    )
+    LucamConvertRawAVIToStdVideo = (
+        BOOL,
+        HANDLE,
+        LPCWSTR,
+        LPCWSTR,
+        ULONG,
+    )
+    LucamCreateDisplayWindow = (
+        BOOL,
+        HANDLE,
+        LPCTSTR,
+        ULONG,
+        c_int,
+        c_int,
+        c_int,
+        c_int,
+        HWND,
+        HMENU,
+    )
+    LucamDataLsbAlign = (
+        BOOL,
+        HANDLE,
+        pLUCAM_IMAGE_FORMAT,
+        pUCHAR,
+    )
+    LucamDestroyDisplayWindow = (
+        BOOL,
+        HANDLE,
+    )
+    LucamDigitalWhiteBalance = (
+        BOOL,
+        HANDLE,
+        ULONG,
+        ULONG,
+        ULONG,
+        ULONG,
+    )
+    LucamDigitalWhiteBalanceEx = (
+        BOOL,
+        HANDLE,
+        FLOAT,
+        FLOAT,
+        ULONG,
+        ULONG,
+        ULONG,
+        ULONG,
+    )
+    LucamDisableFastFrames = (
+        BOOL,
+        HANDLE,
+    )
+    LucamDisableSynchronousSnapshots = (
+        BOOL,
+        HANDLE,
+    )
+    LucamDisplayPropertyPage = (
+        BOOL,
+        HANDLE,
+        HWND,
+    )
+    LucamDisplayVideoFormatPage = (
+        BOOL,
+        HANDLE,
+        HWND,
+    )
+    LucamEnableFastFrames = (
+        BOOL,
+        HANDLE,
+        pLUCAM_SNAPSHOT,
+    )
+    LucamEnableInterfacePowerSpecViolation = (
+        BOOL,
+        HANDLE,
+        BOOL,
+    )
+    LucamEnableSynchronousSnapshots = (
+        HANDLE,
+        ULONG,
+        pHANDLE,
+        POINTER(pLUCAM_SNAPSHOT),
+    )
+    LucamEnableTimestamp = (
+        BOOL,
+        HANDLE,
+        BOOL,
+    )
+    LucamEnumAvailableFrameRates = (
+        ULONG,
+        HANDLE,
+        ULONG,
+        pFLOAT,
+    )
+    LucamEnumCameras = (
+        LONG,
+        pLUCAM_VERSION,
+        ULONG,
+    )
+    LucamForceTakeFastFrame = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+    )
+    LucamGetCameraId = (
+        BOOL,
+        HANDLE,
+        pULONG,
+    )
+    LucamGetCurrentMatrix = (
+        BOOL,
+        HANDLE,
+        pFLOAT_MATRIX33,
+    )
+    LucamGetDualGainFactor = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+    )
+    LucamGetFormat = (
+        BOOL,
+        HANDLE,
+        pLUCAM_FRAME_FORMAT,
+        pFLOAT,
+    )
+    LucamGetHardwareRevision = (
+        BOOL,
+        HANDLE,
+        pULONG,
+    )
+    LucamGetHdrMode = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+    )
+    LucamGetImageIntensity = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+        pLUCAM_IMAGE_FORMAT,
+        ULONG,
+        ULONG,
+        ULONG,
+        ULONG,
+        pFLOAT,
+        pFLOAT,
+        pFLOAT,
+        pFLOAT,
+        pFLOAT,
+    )
+    LucamGetImageProperties = (
+        ULONG,
+        HANDLE,
+        pBYTE,
+        ULONG,
+        pLUCAM_IMAGE_FORMAT,
+        pLUCAM_CONVERSION_PARAMS,
+    )
+    LucamGetLastErrorForCamera = (
+        ULONG,
+        HANDLE,
+    )
+    LucamGetLastError = (ULONG,)
+    LucamGetMetadata = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+        pLUCAM_IMAGE_FORMAT,
+        ULONG,
+        pULONGLONG,
+    )
+    LucamGetPiecewiseLinearResponseParameters = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+        pULONG,
+    )
+    LucamGetProperty = (
+        BOOL,
+        HANDLE,
+        ULONG,
+        pFLOAT,
+        pLONG,
+    )
+    LucamGetStillImageFormat = (
+        BOOL,
+        HANDLE,
+        pLUCAM_IMAGE_FORMAT,
+    )
+    LucamGetTimestamp = (
+        BOOL,
+        HANDLE,
+        pULONGLONG,
+    )
+    LucamGetTimestampFrequency = (
+        BOOL,
+        HANDLE,
+        pULONGLONG,
+    )
+    LucamGetTruePixelDepth = (
+        BOOL,
+        HANDLE,
+        pULONG,
+    )
+    LucamGetVideoImageFormat = (
+        BOOL,
+        HANDLE,
+        pLUCAM_IMAGE_FORMAT,
+    )
+    LucamGpioConfigure = (
+        BOOL,
+        HANDLE,
+        BYTE,
+    )
+    LucamGpioRead = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+        pBYTE,
+    )
+    LucamGpioWrite = (
+        BOOL,
+        HANDLE,
+        BYTE,
+    )
+    LucamGpoSelect = (
+        BOOL,
+        HANDLE,
+        BYTE,
+    )
+    LucamInitAutoLens = (
+        BOOL,
+        HANDLE,
+        BOOL,
+    )
+    LucamIsInterfacePowerSpecViolationEnabled = (
+        BOOL,
+        HANDLE,
+        pBOOL,
+    )
+    LucamIsTimestampEnabled = (
+        BOOL,
+        HANDLE,
+        pBOOL,
+    )
+    LucamLedSet = (
+        BOOL,
+        HANDLE,
+        ULONG,
+    )
+    LucamNumCameras = (LONG,)
+    LucamOneShotAutoExposure = (
+        BOOL,
+        HANDLE,
+        UCHAR,
+        ULONG,
+        ULONG,
+        ULONG,
+        ULONG,
+    )
+    LucamOneShotAutoExposureEx = (
+        BOOL,
+        HANDLE,
+        UCHAR,
+        ULONG,
+        ULONG,
+        ULONG,
+        ULONG,
+        FLOAT,
+    )
+    LucamOneShotAutoGain = (
+        BOOL,
+        HANDLE,
+        UCHAR,
+        ULONG,
+        ULONG,
+        ULONG,
+        ULONG,
+    )
+    LucamOneShotAutoIris = (
+        BOOL,
+        HANDLE,
+        UCHAR,
+        ULONG,
+        ULONG,
+        ULONG,
+        ULONG,
+    )
+    LucamOneShotAutoWhiteBalance = (
+        BOOL,
+        HANDLE,
+        ULONG,
+        ULONG,
+        ULONG,
+        ULONG,
+    )
+    LucamOneShotAutoWhiteBalanceEx = (
+        BOOL,
+        HANDLE,
+        FLOAT,
+        FLOAT,
+        ULONG,
+        ULONG,
+        ULONG,
+        ULONG,
+    )
+    LucamPerformDualTapCorrection = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+        pLUCAM_IMAGE_FORMAT,
+    )
+    LucamPerformMonoGridCorrection = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+        pLUCAM_IMAGE_FORMAT,
+    )
+    LucamPerformMultiTapCorrection = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+        pLUCAM_IMAGE_FORMAT,
+    )
+    LucamPermanentBufferRead = (
+        BOOL,
+        HANDLE,
+        pUCHAR,
+        ULONG,
+        ULONG,
+    )
+    LucamPermanentBufferWrite = (
+        BOOL,
+        HANDLE,
+        pUCHAR,
+        ULONG,
+        ULONG,
+    )
+    LucamPreviewAVIClose = (
+        BOOL,
+        HANDLE,
+    )
+    LucamPreviewAVIControl = (
+        BOOL,
+        HANDLE,
+        ULONG,
+        HWND,
+    )
+    LucamPreviewAVIGetDuration = (
+        BOOL,
+        HANDLE,
+        pLONGLONG,
+        pLONGLONG,
+        pLONGLONG,
+        pLONGLONG,
+    )
+    LucamPreviewAVIGetFormat = (
+        BOOL,
+        HANDLE,
+        pLONG,
+        pLONG,
+        pLONG,
+        pLONG,
+    )
+    LucamPreviewAVIGetFrameCount = (
+        BOOL,
+        HANDLE,
+        pLONGLONG,
+    )
+    LucamPreviewAVIGetFrameRate = (
+        BOOL,
+        HANDLE,
+        pFLOAT,
+    )
+    LucamPreviewAVIGetPositionFrame = (
+        BOOL,
+        HANDLE,
+        pLONGLONG,
+    )
+    LucamPreviewAVIGetPositionTime = (
+        BOOL,
+        HANDLE,
+        pLONGLONG,
+        pLONGLONG,
+        pLONGLONG,
+        pLONGLONG,
+    )
+    LucamPreviewAVIOpen = (
+        HANDLE,
+        LPCWSTR,
+    )
+    LucamPreviewAVISetPositionFrame = (
+        BOOL,
+        HANDLE,
+        LONGLONG,
+    )
+    LucamPreviewAVISetPositionTime = (
+        BOOL,
+        HANDLE,
+        LONGLONG,
+        LONGLONG,
+        LONGLONG,
+        LONGLONG,
+    )
+    LucamPropertyRange = (
+        BOOL,
+        HANDLE,
+        ULONG,
+        pFLOAT,
+        pFLOAT,
+        pFLOAT,
+        pLONG,
+    )
+    LucamQueryDisplayFrameRate = (
+        BOOL,
+        HANDLE,
+        pFLOAT,
+    )
+    LucamQueryExternInterface = (
+        BOOL,
+        HANDLE,
+        pULONG,
+    )
+    LucamQueryRgbPreviewPixelFormat = (
+        BOOL,
+        HANDLE,
+        pULONG,
+    )
+    # LucamQueryStats = (ULONG, HANDLE, BOOL, pLUCAM_STREAM_STATS, ULONG,)
+    LucamQueryVersion = (
+        BOOL,
+        HANDLE,
+        pLUCAM_VERSION,
+    )
+    LucamReadRegister = (
+        BOOL,
+        HANDLE,
+        LONG,
+        LONG,
+        pLONG,
+    )
+    LucamRemoveRgbPreviewCallback = (
+        BOOL,
+        HANDLE,
+        LONG,
+    )
+    LucamRemoveRs232Callback = (
+        None,
+        HANDLE,
+    )
+    LucamRemoveSnapshotCallback = (
+        BOOL,
+        HANDLE,
+        LONG,
+    )
+    LucamRemoveStreamingCallback = (
+        BOOL,
+        HANDLE,
+        LONG,
+    )
+    LucamRs232Receive = (
+        c_int,
+        HANDLE,
+        c_char_p,
+        c_int,
+    )
+    LucamRs232Transmit = (
+        c_int,
+        HANDLE,
+        c_char_p,
+        c_int,
+    )
+    LucamSaveImage = (
+        BOOL,
+        ULONG,
+        ULONG,
+        ULONG,
+        pBYTE,
+        LPCSTR,
+    )  # deprecated
+    LucamSaveImageEx = (
+        BOOL,
+        HANDLE,
+        ULONG,
+        ULONG,
+        ULONG,
+        pBYTE,
+        LPCSTR,
+    )
+    LucamSaveImageW = (
+        BOOL,
+        ULONG,
+        ULONG,
+        ULONG,
+        pBYTE,
+        LPCWSTR,
+    )  # deprecated
+    LucamSaveImageWEx = (
+        BOOL,
+        HANDLE,
+        ULONG,
+        ULONG,
+        ULONG,
+        pBYTE,
+        LPCWSTR,
+    )
+    LucamSelectExternInterface = (
+        BOOL,
+        ULONG,
+    )
+    LucamSetDualGainFactor = (
+        BOOL,
+        HANDLE,
+        BYTE,
+    )
+    LucamSetFormat = (
+        BOOL,
+        HANDLE,
+        pLUCAM_FRAME_FORMAT,
+        FLOAT,
+    )
+    LucamSetHdrMode = (
+        BOOL,
+        HANDLE,
+        BYTE,
+    )
+    LucamSetPiecewiseLinearResponseParameters = (
+        BOOL,
+        HANDLE,
+        BYTE,
+        ULONG,
+    )
+    LucamSetProperty = (
+        BOOL,
+        HANDLE,
+        ULONG,
+        FLOAT,
+        LONG,
+    )
+    LucamSetTimeout = (
+        BOOL,
+        HANDLE,
+        BOOL,
+        FLOAT,
+    )
+    LucamSetTimestamp = (
+        BOOL,
+        HANDLE,
+        ULONGLONG,
+    )
+    LucamSetTriggerMode = (
+        BOOL,
+        HANDLE,
+        BOOL,
+    )
     LucamSetup8bitsColorLUT = (
         BOOL,
         HANDLE,
@@ -577,16 +1123,80 @@ def API():
         BOOL,
         BOOL,
     )
-    LucamRs232Transmit = (c_int, HANDLE, c_char_p, c_int)
-    LucamRs232Receive = (c_int, HANDLE, c_char_p, c_int)
-    LucamAddRs232Callback = (BOOL, HANDLE, Rs232Callback, c_void_p)
-    LucamRemoveRs232Callback = (None, HANDLE)
-    LucamPermanentBufferRead = (BOOL, HANDLE, pUCHAR, ULONG, ULONG)
-    LucamPermanentBufferWrite = (BOOL, HANDLE, pUCHAR, ULONG, ULONG)
-    LucamGetTruePixelDepth = (BOOL, HANDLE, pULONG)
-    LucamSetTimeout = (BOOL, HANDLE, BOOL, FLOAT)
-    LucamGetLastError = (ULONG,)
-    LucamGetLastErrorForCamera = (ULONG, HANDLE)
+    LucamSetup8bitsLUT = (
+        BOOL,
+        HANDLE,
+        pUCHAR_LUT,
+        ULONG,
+    )
+    LucamSetupCustomMatrix = (
+        BOOL,
+        HANDLE,
+        pFLOAT_MATRIX33,
+    )
+    LucamStreamVideoControlAVI = (
+        BOOL,
+        HANDLE,
+        ULONG,
+        LPCWSTR,
+        HWND,
+    )
+    LucamStreamVideoControl = (
+        BOOL,
+        HANDLE,
+        ULONG,
+        HWND,
+    )
+    LucamTakeFastFrame = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+    )
+    LucamTakeFastFrameNoTrigger = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+    )
+    LucamTakeSnapshot = (
+        BOOL,
+        HANDLE,
+        pLUCAM_SNAPSHOT,
+        pBYTE,
+    )
+    LucamTakeSynchronousSnapshots = (
+        BOOL,
+        HANDLE,
+        POINTER(pBYTE),
+    )
+    LucamTakeVideo = (
+        BOOL,
+        HANDLE,
+        LONG,
+        pBYTE,
+    )
+    LucamTakeVideoEx = (
+        BOOL,
+        HANDLE,
+        pBYTE,
+        pULONG,
+        ULONG,
+    )
+    LucamTriggerFastFrame = (
+        BOOL,
+        HANDLE,
+    )
+    LucamUnregisterCallbackNotification = (
+        BOOL,
+        HANDLE,
+        LONG,
+    )
+    LucamWriteRegister = (
+        BOOL,
+        HANDLE,
+        LONG,
+        LONG,
+        pLONG,
+    )
 
     # Pixel format IDs
     LUCAM_PF_8 = 0  # 8 bit raw or monochrome data
