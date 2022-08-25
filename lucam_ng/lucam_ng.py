@@ -1513,6 +1513,10 @@ class Lucam:
         start_rgbstream=6,
     )
 
+    _fastframe = None  # frame format while in fast frame mode
+    _streaming = None  # frame format while in streaming mode
+    _displaying_window = False
+
     def __init__(self, number=1):
         """Open connection to Lumenera camera.
 
@@ -1525,10 +1529,7 @@ class Lucam:
             raise LucamError(API.LucamGetLastError())
         self._byteorder = "<" if self.is_little_endian() else ">"
         self._default_frameformat, self._default_framerate = self.GetFormat()
-        self._fastframe = None  # frame format while in fast frame mode
-        self._streaming = None  # frame format while in streaming mode
         self._callbacks = {}  # references to callback functions
-        self._displaying_window = False
 
     def __del__(self):
         """Close connection to camera."""
